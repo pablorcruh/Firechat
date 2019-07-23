@@ -24,25 +24,24 @@ import com.google.firebase.auth.FirebaseAuth;
 public class LoginActivity extends AppCompatActivity {
 
 
-    private AutoCompleteTextView mEmailView;
-
-    private EditText mPasswordView;
-
+    // TODO: Add member variables here:
     private FirebaseAuth mAuth;
-
-    private static final String TAG = LoginActivity.class.getName();
+    // UI references.
+    private AutoCompleteTextView mEmailView;
+    private EditText mPasswordView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         mEmailView = findViewById(R.id.login_email);
         mPasswordView = findViewById(R.id.login_password);
 
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if(id == R.integer.register_form_finished || id == EditorInfo.IME_NULL){
+                if (id == R.integer.login || id == EditorInfo.IME_NULL) {
                     attemptLogin();
                     return true;
                 }
@@ -50,53 +49,64 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        // TODO: Grab an instance of FirebaseAuth
         mAuth = FirebaseAuth.getInstance();
 
     }
 
-    public void signInExistingUser(View v){
+    // Executed when Sign in button pressed
+    public void signInExistingUser(View v)   {
+        // TODO: Call attemptLogin() here
         attemptLogin();
+
     }
 
-    public void registerNewUser(View v){
+    // Executed when Register button pressed
+    public void registerNewUser(View v) {
         Intent intent = new Intent(this, RegisterActivity.class);
         finish();
         startActivity(intent);
     }
 
-
-
+    // TODO: Complete the attemptLogin() method
     private void attemptLogin() {
-        String email = mEmailView.getText().toString();
-        String password= mPasswordView.getText().toString();
 
-        if(email.equals("") || password.equals("")){
-            return;
-        }else{
-            Log.d(TAG, "attemptLogin: ");
-            Toast.makeText(this,"Login in progress...", Toast.LENGTH_LONG).show();
-        }
-        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        String email = mEmailView.getText().toString();
+        String password = mPasswordView.getText().toString();
+
+        if (email.isEmpty())
+            if (email.equals("") || password.equals("")) return;
+        Toast.makeText(this, "Login in progress...", Toast.LENGTH_SHORT).show();
+
+        // TODO: Use FirebaseAuth to sign in with email & password
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                Log.d(TAG, "onComplete: "+task.isSuccessful());
-                if(!task.isSuccessful()){
-                    Log.d(TAG, "Problem Signing in: "+task.getException());
-                    showErrorMessageDialog("There was a problem signing in");
-                }else{
+
+                Log.d("FlashChat", "signInWithEmail() onComplete: " + task.isSuccessful());
+
+                if (!task.isSuccessful()) {
+                    Log.d("FlashChat", "Problem signing in: " + task.getException());
+                    showErrorDialog("There was a problem signing in");
+                } else {
                     Intent intent = new Intent(LoginActivity.this, MainChatActivity.class);
                     finish();
                     startActivity(intent);
                 }
+
             }
         });
+
+
     }
 
-    public void showErrorMessageDialog(String message){
+    // TODO: Show error on screen with an alert dialog
+    private void showErrorDialog(String message) {
+
         new AlertDialog.Builder(this)
-                .setTitle("Error Login")
+                .setTitle("Oops")
                 .setMessage(message)
-                .setPositiveButton(android.R.string.ok,null)
+                .setPositiveButton(android.R.string.ok, null)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
     }
