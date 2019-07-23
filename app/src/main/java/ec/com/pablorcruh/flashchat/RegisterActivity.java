@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -21,9 +23,9 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private static final String CHAT_PREFS= "chatPrefs";
-    private static final String DISPLAY_NAME_KEY = "username";
-    private static final String TAG = RegisterActivity.class.getName();
+    public static final String CHAT_PREFS= "chatPrefs";
+    public static final String DISPLAY_NAME_KEY = "username";
+    pubic static final String TAG = RegisterActivity.class.getName();
 
 
     private AutoCompleteTextView mEmailView;
@@ -114,6 +116,10 @@ public class RegisterActivity extends AppCompatActivity {
                         Log.d(TAG, "onComplete: "+task.isSuccessful());
                         if(!task.isSuccessful()){
                             Log.d(TAG, "user creation failed: ");
+                        }else{
+                            saveDisplayName();
+                            Intent intent= new Intent(RegisterActivity.this, LoginActivity.class);
+                            finish();
                         }
                     }
                 });
@@ -127,6 +133,14 @@ public class RegisterActivity extends AppCompatActivity {
                 .setPositiveButton(android.R.string.ok,null)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+
+    private void saveDisplayName(){
+        String displayName = mUsernameView.getText().toString();
+        SharedPreferences prefs = getSharedPreferences(CHAT_PREFS,MODE_PRIVATE);
+        prefs.edit().putString(DISPLAY_NAME_KEY,displayName).apply();
+
+
     }
 
 }
